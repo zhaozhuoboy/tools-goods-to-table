@@ -130,6 +130,26 @@ body {
   height: 20px;
 }
 
+/* 顶部操作按钮区域 */
+.top-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.top-actions .btn {
+  padding: 8px 12px;
+  font-size: 13px;
+  flex: 1;
+}
+
+.top-actions .btn-icon {
+  width: 16px;
+  height: 16px;
+}
+
 /* 主要内容区域 */
 .main-content {
   flex: 1;
@@ -139,13 +159,6 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
-}
-
-/* 操作按钮区域 */
-.action-bar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
 }
 
 /* 按钮基础样式 */
@@ -219,6 +232,24 @@ body {
   background: var(--bg-hover);
   border-color: var(--jd-red);
   color: var(--jd-red);
+}
+
+.btn-submit-top {
+  flex: 1;
+  background: linear-gradient(135deg, var(--jd-red) 0%, var(--jd-red-dark) 100%);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(225, 37, 27, 0.3);
+}
+
+.btn-submit-top:hover {
+  background: linear-gradient(135deg, var(--jd-red-hover) 0%, var(--jd-red) 100%);
+  box-shadow: 0 4px 12px rgba(225, 37, 27, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-submit-top:active {
+  transform: translateY(0);
 }
 
 .btn-submit {
@@ -364,14 +395,18 @@ body {
 
 /* 状态提示 */
 .status-message {
-  margin-top: 16px;
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
+  margin: 0;
+  padding: 12px 24px;
+  border-radius: 0;
   font-size: 13px;
   display: none;
   align-items: center;
   gap: 8px;
   animation: slideIn 0.3s ease;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .status-message.show {

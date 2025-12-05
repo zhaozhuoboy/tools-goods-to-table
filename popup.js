@@ -15,6 +15,9 @@ const productImageInput = document.getElementById('productImage');
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
   initEventListeners();
+  // 先加载保存的数据，然后初始化默认值（只对空字段设置）
+  loadSavedData();
+  initDefaultValues();
   checkCurrentTab();
 });
 
@@ -43,13 +46,18 @@ function initEventListeners() {
   // 打开表格按钮
   openTableBtn.addEventListener('click', handleOpenTable);
   
-  // 图片输入变化
-  productImageInput.addEventListener('input', handleImageInputChange);
+  // 图片输入变化（如果存在）
+  if (productImageInput) {
+    productImageInput.addEventListener('input', handleImageInputChange);
+  }
   
   // 输入框变化时保存
   const inputs = productForm.querySelectorAll('input');
   inputs.forEach(input => {
-    input.addEventListener('input', debounce(saveFormData, 500));
+    // 跳过隐藏字段
+    if (input.type !== 'hidden') {
+      input.addEventListener('input', debounce(saveFormData, 500));
+    }
   });
 }
 
@@ -113,10 +121,16 @@ function extractProductInfo() {
     category: '',
     shopName: '',
     productName: '',
-    pagePrice: '',
+    originalPrice: '',
     productUrl: window.location.href,
     productImage: '',
-    productSku: ''
+    productSku: '',
+    // 以下字段保持为空，使用默认值
+    activityId: '',
+    coupon: '',
+    priceAfterCoupon: '',
+    commissionRate: '',
+    serviceRate: ''
   };
   
   try {
@@ -138,11 +152,11 @@ function extractProductInfo() {
       info.productName = nameEl.textContent.trim();
     }
     
-    // 提取页面价
+    // 提取原价（页面价）
     const priceEl = document.querySelector('.price .p-price .price, .summary-price .p-price, [class*="price"] [class*="J-price"]');
     if (priceEl) {
       const priceText = priceEl.textContent.trim().replace(/[^\d.]/g, '');
-      info.pagePrice = priceText;
+      info.originalPrice = priceText;
     }
     
     // 提取商品图片
@@ -164,20 +178,66 @@ function extractProductInfo() {
   return info;
 }
 
+// 初始化默认值
+function initDefaultValues() {
+  // 设置默认值（如果字段为空或未设置）
+  const defaultValues = {
+    customerPlatform: '京东',
+    calculationMethod: '按比例',
+    productAttribute: '一手',
+    channel: '京东',
+    promotionMethod: '精推品',
+    settlementMethod: '线上'
+  };
+  
+  Object.keys(defaultValues).forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field && (!field.value || field.value.trim() === '')) {
+      field.value = defaultValues[fieldId];
+    }
+  });
+  
+  // 确保空字段保持为空（这些字段不应该有默认值）
+  const emptyFields = ['activityId', 'coupon', 'priceAfterCoupon', 'commissionRate', 'serviceRate'];
+  emptyFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field && (!field.value || field.value.trim() === '')) {
+      field.value = '';
+    }
+  });
+}
+
 // 填充表单
 function fillForm(data) {
   document.getElementById('category').value = data.category || '';
   document.getElementById('shopName').value = data.shopName || '';
   document.getElementById('productName').value = data.productName || '';
-  document.getElementById('pagePrice').value = data.pagePrice || '';
   document.getElementById('productUrl').value = data.productUrl || '';
   document.getElementById('productImage').value = data.productImage || '';
   document.getElementById('productSku').value = data.productSku || '';
+  
+  // 原价（之前是 pagePrice）
+  const originalPrice = document.getElementById('originalPrice');
+  if (originalPrice) {
+    originalPrice.value = data.originalPrice || data.pagePrice || '';
+  }
+  
+  // 活动ID、优惠券、券后价、佣金率、服务费率保持为空（使用默认空值）
+  const emptyFields = ['activityId', 'coupon', 'priceAfterCoupon', 'commissionRate', 'serviceRate'];
+  emptyFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field && data[fieldId] !== undefined) {
+      field.value = data[fieldId] || '';
+    }
+  });
   
   // 更新图片预览
   if (data.productImage) {
     updateImagePreview(data.productImage);
   }
+  
+  // 重新初始化默认值（确保默认值字段不被覆盖）
+  initDefaultValues();
   
   // 保存数据
   saveFormData();
@@ -187,29 +247,37 @@ function fillForm(data) {
 function handleClear() {
   if (confirm('确定要清空所有表单数据吗？')) {
     productForm.reset();
-    imagePreview.style.display = 'none';
-    imagePreview.src = '';
+    if (imagePreview) {
+      imagePreview.style.display = 'none';
+      imagePreview.src = '';
+    }
     clearSavedData();
+    // 重新初始化默认值
+    initDefaultValues();
     showStatus('表单已清空', 'info');
   }
 }
 
 // 处理图片输入变化
 function handleImageInputChange() {
+  if (!productImageInput) return;
   const url = productImageInput.value.trim();
-  if (url) {
+  if (url && imagePreview) {
     updateImagePreview(url);
-  } else {
+  } else if (imagePreview) {
     imagePreview.style.display = 'none';
   }
 }
 
 // 更新图片预览
 function updateImagePreview(url) {
+  if (!imagePreview) return;
   imagePreview.src = url;
   imagePreview.style.display = 'block';
   imagePreview.onerror = () => {
-    imagePreview.style.display = 'none';
+    if (imagePreview) {
+      imagePreview.style.display = 'none';
+    }
   };
 }
 
@@ -229,11 +297,22 @@ async function handleSubmit(e) {
     const data = {
       category: formData.get('category'),
       shopName: formData.get('shopName'),
+      customerPlatform: formData.get('customerPlatform') || '京东',
       productName: formData.get('productName'),
-      pagePrice: parseFloat(formData.get('pagePrice')) || 0,
       productUrl: formData.get('productUrl'),
-      productImage: formData.get('productImage') || '',
-      productSku: formData.get('productSku') || ''
+      productSku: formData.get('productSku') || '',
+      activityId: formData.get('activityId') || '',
+      originalPrice: parseFloat(formData.get('originalPrice')) || 0,
+      coupon: parseFloat(formData.get('coupon')) || 0,
+      priceAfterCoupon: parseFloat(formData.get('priceAfterCoupon')) || 0,
+      commissionRate: parseFloat(formData.get('commissionRate')) || 0,
+      serviceRate: parseFloat(formData.get('serviceRate')) || 0,
+      calculationMethod: formData.get('calculationMethod') || '按比例',
+      productAttribute: formData.get('productAttribute') || '一手',
+      channel: formData.get('channel') || '京东',
+      promotionMethod: formData.get('promotionMethod') || '精推品',
+      settlementMethod: formData.get('settlementMethod') || '线上',
+      productImage: formData.get('productImage') || ''
     };
     
     // 显示加载状态
@@ -303,18 +382,35 @@ function loadSavedData() {
   chrome.storage.local.get(['formData'], (result) => {
     if (result.formData) {
       const data = result.formData;
-      document.getElementById('category').value = data.category || '';
-      document.getElementById('shopName').value = data.shopName || '';
-      document.getElementById('productName').value = data.productName || '';
-      document.getElementById('pagePrice').value = data.pagePrice || '';
-      document.getElementById('productUrl').value = data.productUrl || '';
-      document.getElementById('productImage').value = data.productImage || '';
-      document.getElementById('productSku').value = data.productSku || '';
+      
+      // 填充所有字段
+      const fields = [
+        'category', 'shopName', 'customerPlatform', 'productName', 'productUrl', 
+        'productSku', 'activityId', 'originalPrice', 'coupon', 'priceAfterCoupon',
+        'commissionRate', 'serviceRate', 'calculationMethod', 'productAttribute',
+        'channel', 'promotionMethod', 'settlementMethod', 'productImage'
+      ];
+      
+      fields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field && data[fieldId] !== undefined && data[fieldId] !== null && data[fieldId] !== '') {
+          field.value = data[fieldId];
+        }
+      });
+      
+      // 兼容旧数据中的 pagePrice 字段
+      if (data.pagePrice && !data.originalPrice) {
+        const originalPriceField = document.getElementById('originalPrice');
+        if (originalPriceField) {
+          originalPriceField.value = data.pagePrice;
+        }
+      }
       
       if (data.productImage) {
         updateImagePreview(data.productImage);
       }
     }
+    // 注意：默认值初始化在 loadSavedData 之后调用
   });
 }
 

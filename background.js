@@ -167,16 +167,28 @@ async function handleSyncToFeishu(data) {
     }
     
     console.log('[Sync] 使用的工作表 ID:', sheetId, '工作表名称:', sheetTitle);
-    const skuUrl = data.productUrl + '?rid=10690'
-    // 构建要写入的数据行
+    const skuUrl = data.productUrl ? (data.productUrl + '?rid=10690') : '';
+    
+    // 构建要写入的数据行（按照表单字段顺序）
     const rowData = [
-      data.category || '',
-      data.shopName || '',
-      data.productName || '',
-      data.pagePrice || '',
-      skuUrl || '',
-      data.productImage || '',
-      data.productSku || '',
+      data.shopName || '',                    // 关联客户OR店铺名称
+      data.customerPlatform || '京东',        // 客户平台
+      data.category || '',                    // 商品类目
+      data.productSku || '',                 // 商品SKU
+      data.productName || '',                 // 商品名称
+      skuUrl || '',                          // 产品链接
+      data.activityId || '',                  // 活动ID
+      data.originalPrice || data.pagePrice || '', // 原价（兼容旧字段）
+      data.coupon || '',                      // 优惠券
+      data.priceAfterCoupon || '',            // 券后价
+      data.commissionRate || '',              // 佣金率
+      data.serviceRate || '',                 // 服务费率
+      data.calculationMethod || '按比例',     // 计算方式
+      data.productAttribute || '一手',        // 商品属性
+      data.channel || '京东',                 // 渠道
+      data.promotionMethod || '精推品',       // 推广方式
+      data.settlementMethod || '线上',        // 结算方式
+      data.productImage || '',                // 商品图片（保留在最后）
     ];
     
     // 步骤 4: 写入数据

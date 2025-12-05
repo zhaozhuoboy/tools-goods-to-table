@@ -70,24 +70,10 @@
 
       <!-- 表单区域 -->
       <form class="form" id="productForm">
-        <div class="form-group">
-          <label class="form-label" for="category">
-            <span class="label-text">一级类目</span>
-            <span class="required">*</span>
-          </label>
-          <input 
-            type="text" 
-            id="category" 
-            name="category" 
-            class="form-input" 
-            placeholder="例如：手机 > 手机通讯 > 手机"
-            required
-          >
-        </div>
-
+        <!-- 关联客户OR店铺名称 -->
         <div class="form-group">
           <label class="form-label" for="shopName">
-            <span class="label-text">店铺名称</span>
+            <span class="label-text">关联客户OR店铺名称</span>
             <span class="required">*</span>
           </label>
           <input 
@@ -100,6 +86,52 @@
           >
         </div>
 
+        <!-- 客户平台 -->
+        <div class="form-group">
+          <label class="form-label" for="customerPlatform">
+            <span class="label-text">客户平台</span>
+          </label>
+          <input 
+            type="text" 
+            id="customerPlatform" 
+            name="customerPlatform" 
+            class="form-input" 
+            placeholder="客户平台"
+            value="京东"
+          >
+        </div>
+
+        <!-- 商品类目（对应之前的一级类目） -->
+        <div class="form-group">
+          <label class="form-label" for="category">
+            <span class="label-text">商品类目</span>
+            <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="category" 
+            name="category" 
+            class="form-input" 
+            placeholder="例如：手机 > 手机通讯 > 手机"
+            required
+          >
+        </div>
+
+        <!-- 商品SKU -->
+        <div class="form-group">
+          <label class="form-label" for="productSku">
+            <span class="label-text">商品SKU</span>
+          </label>
+          <input 
+            type="text" 
+            id="productSku" 
+            name="productSku" 
+            class="form-input" 
+            placeholder="商品SKU编号"
+          >
+        </div>
+
+        <!-- 商品名称 -->
         <div class="form-group">
           <label class="form-label" for="productName">
             <span class="label-text">商品名称</span>
@@ -115,29 +147,10 @@
           >
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="pagePrice">
-            <span class="label-text">页面价</span>
-            <span class="required">*</span>
-          </label>
-          <div class="input-with-unit">
-            <input 
-              type="number" 
-              id="pagePrice" 
-              name="pagePrice" 
-              class="form-input" 
-              placeholder="0.00"
-              step="0.01"
-              min="0"
-              required
-            >
-            <span class="input-unit">元</span>
-          </div>
-        </div>
-
+        <!-- 产品链接 -->
         <div class="form-group">
           <label class="form-label" for="productUrl">
-            <span class="label-text">页面链接</span>
+            <span class="label-text">产品链接</span>
             <span class="required">*</span>
           </label>
           <input 
@@ -150,34 +163,198 @@
           >
         </div>
 
+        <!-- 活动ID -->
         <div class="form-group">
-          <label class="form-label" for="productImage">
-            <span class="label-text">商品图片</span>
-          </label>
-          <div class="image-preview-container" id="imagePreviewContainer">
-            <img id="imagePreview" class="image-preview" src="" alt="商品图片预览" style="display: none;">
-            <input 
-              type="url" 
-              id="productImage" 
-              name="productImage" 
-              class="form-input" 
-              placeholder="https://img.example.com/image.jpg"
-            >
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="productSku">
-            <span class="label-text">商品SKU</span>
+          <label class="form-label" for="activityId">
+            <span class="label-text">活动ID</span>
           </label>
           <input 
             type="text" 
-            id="productSku" 
-            name="productSku" 
+            id="activityId" 
+            name="activityId" 
             class="form-input" 
-            placeholder="商品SKU编号"
+            placeholder="活动ID"
           >
         </div>
+
+        <!-- 原价 -->
+        <div class="form-group">
+          <label class="form-label" for="originalPrice">
+            <span class="label-text">原价</span>
+          </label>
+          <div class="input-with-unit">
+            <input 
+              type="number" 
+              id="originalPrice" 
+              name="originalPrice" 
+              class="form-input" 
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+            >
+            <span class="input-unit">元</span>
+          </div>
+        </div>
+
+        <!-- 优惠券 -->
+        <div class="form-group">
+          <label class="form-label" for="coupon">
+            <span class="label-text">优惠券</span>
+          </label>
+          <div class="input-with-unit">
+            <input 
+              type="number" 
+              id="coupon" 
+              name="coupon" 
+              class="form-input" 
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+            >
+            <span class="input-unit">元</span>
+          </div>
+        </div>
+
+        <!-- 券后价 -->
+        <div class="form-group">
+          <label class="form-label" for="priceAfterCoupon">
+            <span class="label-text">券后价</span>
+          </label>
+          <div class="input-with-unit">
+            <input 
+              type="number" 
+              id="priceAfterCoupon" 
+              name="priceAfterCoupon" 
+              class="form-input" 
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+            >
+            <span class="input-unit">元</span>
+          </div>
+        </div>
+
+        <!-- 佣金率 -->
+        <div class="form-group">
+          <label class="form-label" for="commissionRate">
+            <span class="label-text">佣金率</span>
+          </label>
+          <div class="input-with-unit">
+            <input 
+              type="number" 
+              id="commissionRate" 
+              name="commissionRate" 
+              class="form-input" 
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              max="100"
+            >
+            <span class="input-unit">%</span>
+          </div>
+        </div>
+
+        <!-- 服务费率 -->
+        <div class="form-group">
+          <label class="form-label" for="serviceRate">
+            <span class="label-text">服务费率</span>
+          </label>
+          <div class="input-with-unit">
+            <input 
+              type="number" 
+              id="serviceRate" 
+              name="serviceRate" 
+              class="form-input" 
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              max="100"
+            >
+            <span class="input-unit">%</span>
+          </div>
+        </div>
+
+        <!-- 计算方式 -->
+        <div class="form-group">
+          <label class="form-label" for="calculationMethod">
+            <span class="label-text">计算方式</span>
+          </label>
+          <input 
+            type="text" 
+            id="calculationMethod" 
+            name="calculationMethod" 
+            class="form-input" 
+            placeholder="计算方式"
+            value="按比例"
+          >
+        </div>
+
+        <!-- 商品属性 -->
+        <div class="form-group">
+          <label class="form-label" for="productAttribute">
+            <span class="label-text">商品属性</span>
+          </label>
+          <input 
+            type="text" 
+            id="productAttribute" 
+            name="productAttribute" 
+            class="form-input" 
+            placeholder="商品属性"
+            value="一手"
+          >
+        </div>
+
+        <!-- 渠道 -->
+        <div class="form-group">
+          <label class="form-label" for="channel">
+            <span class="label-text">渠道</span>
+          </label>
+          <input 
+            type="text" 
+            id="channel" 
+            name="channel" 
+            class="form-input" 
+            placeholder="渠道"
+            value="京东"
+          >
+        </div>
+
+        <!-- 推广方式 -->
+        <div class="form-group">
+          <label class="form-label" for="promotionMethod">
+            <span class="label-text">推广方式</span>
+          </label>
+          <input 
+            type="text" 
+            id="promotionMethod" 
+            name="promotionMethod" 
+            class="form-input" 
+            placeholder="推广方式"
+            value="精推品"
+          >
+        </div>
+
+        <!-- 结算方式 -->
+        <div class="form-group">
+          <label class="form-label" for="settlementMethod">
+            <span class="label-text">结算方式</span>
+          </label>
+          <input 
+            type="text" 
+            id="settlementMethod" 
+            name="settlementMethod" 
+            class="form-input" 
+            placeholder="结算方式"
+            value="线上"
+          >
+        </div>
+
+        <!-- 商品图片（保留原有字段，但不显示在主要表单中，或作为隐藏字段） -->
+        <input 
+          type="hidden" 
+          id="productImage" 
+          name="productImage" 
+        >
       </form>
     </main>
   </div>

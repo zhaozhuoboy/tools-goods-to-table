@@ -6,6 +6,7 @@ const clearBtn = document.getElementById('clearBtn');
 const settingsBtn = document.getElementById('settingsBtn');
 const productForm = document.getElementById('productForm');
 const submitBtn = document.getElementById('submitBtn');
+const openTableBtn = document.getElementById('openTableBtn');
 const statusMessage = document.getElementById('statusMessage');
 const imagePreview = document.getElementById('imagePreview');
 const imagePreviewContainer = document.getElementById('imagePreviewContainer');
@@ -38,6 +39,9 @@ function initEventListeners() {
   
   // 表单提交
   productForm.addEventListener('submit', handleSubmit);
+  
+  // 打开表格按钮
+  openTableBtn.addEventListener('click', handleOpenTable);
   
   // 图片输入变化
   productImageInput.addEventListener('input', handleImageInputChange);
@@ -317,6 +321,50 @@ function loadSavedData() {
 // 清空保存的数据
 function clearSavedData() {
   chrome.storage.local.remove(['formData']);
+}
+
+// 打开表格文档
+async function handleOpenTable() {
+  try {
+    // 从存储中获取表格 URL
+    const result = await chrome.storage.local.get(['spreadsheet_url', 'spreadsheet_token', 'selectedTableToken']);
+    
+    let tableUrl = result.spreadsheet_url;
+    
+    // 如果没有保存的 URL，提示用户去设置页面选择表格
+    if (!tableUrl) {
+      const tableToken = result.spreadsheet_token || result.selectedTableToken;
+      if (!tableToken) {
+        showStatus('请先在设置页面配置并选择表格', 'warning');
+      } else {
+        showStatus('未找到表格链接，请去设置页面重新选择表格以保存链接', 'warning');
+      }
+      // 打开设置页面
+      setTimeout(() => {
+        chrome.runtime.openOptionsPage();
+      }, 2000);
+      return;
+    }
+    
+    // 验证 URL 格式
+    try {
+      new URL(tableUrl);
+    } catch (error) {
+      showStatus('表格链接格式错误，请检查设置', 'error');
+      setTimeout(() => {
+        chrome.runtime.openOptionsPage();
+      }, 2000);
+      return;
+    }
+    
+    // 在新标签页中打开表格
+    chrome.tabs.create({ url: tableUrl });
+    showStatus('正在打开表格...', 'info');
+    
+  } catch (error) {
+    console.error('打开表格失败:', error);
+    showStatus('打开表格失败：' + error.message, 'error');
+  }
 }
 
 // 防抖函数

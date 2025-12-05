@@ -281,7 +281,7 @@ function displayTablesList(spreadsheets) {
         });
         
         // 将选中的表格 token 存储为 spreadsheet_token
-        await selectTable(spreadsheet.token, spreadsheet.name || '未命名表格');
+        await selectTable(spreadsheet.token, spreadsheet.name || '未命名表格', spreadsheet.url);
       });
     } else {
       console.error('[Display Tables] ❌ 未找到选择按钮，表格项 HTML:', tableItem.innerHTML);
@@ -295,10 +295,11 @@ function displayTablesList(spreadsheets) {
 
 // 选择表格
 // 将用户选择的表格 token 存储为 spreadsheet_token，用于后续向表格中插入数据
-async function selectTable(tableToken, tableName) {
+async function selectTable(tableToken, tableName, tableUrl) {
   console.log('[Select Table] 开始选择表格:', {
     token: tableToken,
-    name: tableName
+    name: tableName,
+    url: tableUrl
   });
   
   if (!tableToken) {
@@ -311,11 +312,18 @@ async function selectTable(tableToken, tableName) {
     // 保存选中的表格信息
     // 使用 spreadsheet_token 作为主键（后续插入数据时使用）
     // 同时保存 selectedTableToken 和 selectedTableName 以保持向后兼容
-    await chrome.storage.local.set({
+    const saveData = {
       spreadsheet_token: tableToken,  // 主键：用于后续向表格中插入数据
       selectedTableToken: tableToken,  // 兼容旧代码
       selectedTableName: tableName
-    });
+    };
+    
+    // 如果提供了表格 URL，也保存下来（用于快速打开表格）
+    if (tableUrl) {
+      saveData.spreadsheet_url = tableUrl;
+    }
+    
+    await chrome.storage.local.set(saveData);
     
     console.log('[Select Table] ✅ 表格信息已保存到存储:', {
       name: tableName,
@@ -367,7 +375,7 @@ async function handleSave(e) {
   
   const folderId = folderIdInput.value.trim();
   // 优先使用 spreadsheet_token，如果没有则使用 selectedTableToken（向后兼容）
-  const current = await chrome.storage.local.get(['spreadsheet_token', 'selectedTableToken', 'selectedTableName']);
+  const current = await chrome.storage.local.get(['spreadsheet_token', 'selectedTableToken', 'selectedTableName', 'spreadsheet_url']);
   
   if (!folderId) {
     showStatus('请填写文件夹 ID', 'error');
@@ -391,6 +399,11 @@ async function handleSave(e) {
       selectedTableToken: tableToken,  // 保持向后兼容
       selectedTableName: current.selectedTableName
     };
+    
+    // 如果存在表格 URL，也保存下来
+    if (current.spreadsheet_url) {
+      saveData.spreadsheet_url = current.spreadsheet_url;
+    }
     
     if (!saved.credentialsSaved) {
       // 如果凭证未保存，也保存凭证（兼容旧逻辑）

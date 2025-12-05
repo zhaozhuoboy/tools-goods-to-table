@@ -145,6 +145,12 @@ body {
   flex: 1;
 }
 
+.top-actions .btn-open-table {
+  flex: 0 0 auto;
+  min-width: auto;
+  padding: 8px 16px;
+}
+
 .top-actions .btn-icon {
   width: 16px;
   height: 16px;

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "花椒工具箱",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "快速提取京东商品信息并同步到飞书表格",
   "permissions": [
     "storage",

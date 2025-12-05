@@ -141,7 +141,7 @@ function extractProductInfo() {
     }
     
     // 提取店铺名称
-    const shopEl = document.querySelector('.shop-name, .store-name, [class*="shop"] [class*="name"], .seller-name');
+    const shopEl = document.querySelector('.top-shop-info .top-name');
     if (shopEl) {
       info.shopName = shopEl.textContent.trim();
     }

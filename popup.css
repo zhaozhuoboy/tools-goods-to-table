@@ -132,7 +132,8 @@ body {
 
 /* 顶部操作按钮区域 */
 .top-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   padding: 12px 16px;
   background: var(--bg-primary);
@@ -142,12 +143,11 @@ body {
 .top-actions .btn {
   padding: 8px 12px;
   font-size: 13px;
-  flex: 1;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .top-actions .btn-open-table {
-  flex: 0 0 auto;
-  min-width: auto;
   padding: 8px 16px;
 }
 
@@ -211,7 +211,6 @@ body {
 }
 
 .btn-primary {
-  flex: 1;
   background: var(--jd-red);
   color: white;
   box-shadow: 0 2px 8px rgba(225, 37, 27, 0.3);
@@ -228,7 +227,6 @@ body {
 }
 
 .btn-secondary {
-  flex: 1;
   background: var(--bg-secondary);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
@@ -241,7 +239,6 @@ body {
 }
 
 .btn-submit-top {
-  flex: 1;
   background: linear-gradient(135deg, var(--jd-red) 0%, var(--jd-red-dark) 100%);
   color: white;
   font-weight: 600;
